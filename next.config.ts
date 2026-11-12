@@ -1,10 +1,29 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const frontendDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    const backendOrigin = process.env.BACKEND_ORIGIN;
+
+    if (!backendOrigin) {
+      return [];
+    }
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendOrigin.replace(/\/$/, "")}/api/v1/:path*`,
+      },
+    ];
+  },
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
+    root: path.resolve(frontendDirectory, ".."),
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

@@ -3,6 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  --font-geist-sans: Inter, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
   color-scheme: light;
   --radius: 0.625rem;
   --space-1: 0.25rem;
@@ -255,6 +257,68 @@ button, input { font: inherit; }
 .skeleton-heading { width: min(16rem, 60%); height: 2rem; }
 .skeleton-panel { min-height: 12rem; }
 @keyframes skeleton-pulse { 50% { opacity: 0.58; } }
+
+.filter-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); margin-bottom: var(--space-4); }
+.search-control { min-width: min(100%, 18rem); flex: 1 1 18rem; }
+.filter-control { display: grid; min-width: 8rem; gap: var(--space-1); color: var(--muted-foreground); font-size: var(--font-xs); }
+.filter-control select, .filter-control input, .record-form select, .record-form textarea { min-height: 2.75rem; border: 1px solid var(--input); border-radius: calc(var(--radius) - 2px); background: var(--card); padding: 0 var(--space-3); color: var(--foreground); }
+.filter-control select[multiple] { min-height: 2.75rem; max-height: 8rem; }
+.data-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); box-shadow: var(--shadow-sm); }
+.table-scroll { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+.data-table th { background: var(--muted); color: var(--muted-foreground); font-size: var(--font-xs); font-weight: 600; }
+.data-table th, .data-table td { border-bottom: 1px solid var(--border); padding: var(--space-4); vertical-align: middle; }
+.data-table tbody tr:last-child td { border-bottom: 0; }
+.data-table td small { display: block; margin-top: var(--space-1); color: var(--muted-foreground); }
+.table-primary-link { color: var(--secondary-foreground); font-weight: 600; }
+.table-primary-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.table-message { display: grid; min-height: 11rem; align-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-6); color: var(--muted-foreground); text-align: center; }
+.table-message p { margin: 0; }
+.table-footer { display: flex; min-height: 4rem; align-items: center; justify-content: space-between; gap: var(--space-3); border-top: 1px solid var(--border); padding: var(--space-3) var(--space-4); color: var(--muted-foreground); }
+.table-footer > div { display: flex; align-items: center; gap: var(--space-2); }
+.table-footer select { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card); padding: var(--space-2); color: var(--foreground); }
+.table-footer .button { min-height: 2.25rem; }
+.dialog-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; overflow-y: auto; background: oklch(0.1 0.02 255 / 0.5); padding: var(--space-5); }
+.form-dialog { width: min(100%, 38rem); max-height: min(90vh, 52rem); overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); padding: var(--space-6); box-shadow: var(--shadow-md); }
+.dialog-heading, .section-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.dialog-heading { margin-bottom: var(--space-5); }
+.dialog-heading h2, .section-heading h2 { margin: 0; font-size: var(--font-lg); font-weight: 600; }
+.record-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.record-form .form-field:has(textarea), .record-form .dialog-actions, .record-form > .login-error { grid-column: 1 / -1; }
+.record-form textarea { min-height: 6rem; resize: vertical; padding: var(--space-3); }
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); padding-top: var(--space-2); }
+.back-link { display: inline-block; margin: 0 0 var(--space-4); color: var(--muted-foreground); }
+.back-link:hover { color: var(--primary); }
+.doctor-profile-card { display: flex; align-items: center; gap: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); padding: var(--space-6); box-shadow: var(--shadow-sm); }
+.doctor-profile-avatar { display: grid; width: 3.5rem; height: 3.5rem; flex: 0 0 auto; place-items: center; border-radius: 999px; background: var(--primary-soft); color: var(--secondary-foreground); font-size: var(--font-lg); font-weight: 650; }
+.doctor-profile-main { min-width: 0; flex: 1; }
+.doctor-profile-card h1 { margin: 0; font-size: var(--font-xl); font-weight: 600; }
+.doctor-stat { display: grid; justify-items: end; gap: var(--space-1); }
+.doctor-stat strong { font-size: var(--font-xl); font-variant-numeric: tabular-nums; }
+.doctor-stat span, .doctor-contact-grid span { color: var(--muted-foreground); font-size: var(--font-xs); }
+.doctor-contact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-4) 0 var(--space-8); border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); padding: var(--space-4) var(--space-5); }
+.doctor-contact-grid > div { display: grid; gap: var(--space-1); }
+.doctor-contact-grid a, .doctor-contact-grid strong { overflow-wrap: anywhere; font-weight: 550; }
+.patients-section { margin-top: var(--space-8); }
+.section-heading { margin-bottom: var(--space-4); }
+.compact-toolbar { margin-bottom: var(--space-3); }
+.status-chip { display: inline-flex; border-radius: 999px; background: var(--primary-soft); padding: var(--space-1) var(--space-2); color: var(--secondary-foreground); font-size: var(--font-xs); }
+.status-discharged { background: var(--muted); color: var(--muted-foreground); }
+.status-under-observation { background: oklch(0.95 0.05 85); color: oklch(0.4 0.09 70); }
+.dark .status-under-observation { background: oklch(0.31 0.05 80); color: oklch(0.9 0.08 85); }
+
+@media (max-width: 47.999rem) {
+  .filter-toolbar { align-items: stretch; }
+  .filter-control { flex: 1 1 9rem; }
+  .table-footer { align-items: flex-start; flex-direction: column; }
+  .table-footer > div { width: 100%; justify-content: space-between; }
+  .dialog-backdrop { align-items: end; padding: 0; }
+  .form-dialog { width: 100%; max-height: 94vh; border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: var(--space-5) var(--space-4); }
+  .doctor-profile-card { align-items: flex-start; flex-wrap: wrap; padding: var(--space-4); }
+  .doctor-stat { margin-left: auto; }
+  .doctor-contact-grid { grid-template-columns: 1fr; gap: var(--space-3); margin-bottom: var(--space-6); padding: var(--space-4); }
+}
+@media (max-width: 35rem) { .record-form { grid-template-columns: 1fr; } .record-form .form-field, .record-form .dialog-actions, .record-form > .login-error { grid-column: auto; } }
 
 @media (min-width: 48rem) and (max-width: 63.999rem) {
   .sidebar { width: var(--sidebar-rail-width); align-items: center; padding-inline: var(--space-2); }

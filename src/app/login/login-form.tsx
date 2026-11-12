@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { loginSchema } from "@doctor-tracker/contracts";
+import { apiFetch, ApiError } from "@/lib/api";
 
 type LoginFormProps = { nextPath: string };
 
@@ -17,25 +19,25 @@ export default function LoginForm({ nextPath }: LoginFormProps) {
 
     const formData = new FormData(event.currentTarget);
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.get("email"),
-          password: formData.get("password"),
-        }),
+      const parsed = loginSchema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password"),
       });
-
-      if (!response.ok) {
-        setError(response.status === 401 ? "Invalid email or password" : "Couldn't sign in. Try again.");
+      if (!parsed.success) {
+        setError("Enter a valid email and password");
         return;
       }
 
+      await apiFetch("/auth/login", {
+        method: "POST",
+        body: JSON.stringify(parsed.data),
+      });
       router.replace(nextPath);
       router.refresh();
-    } catch {
-      setError("Couldn't connect to the sign-in service. Try again.");
+    } catch (error) {
+      setError(error instanceof ApiError && error.status === 401
+        ? "Invalid email or password"
+        : "Couldn't sign in. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }

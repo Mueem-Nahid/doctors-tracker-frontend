@@ -7,8 +7,20 @@ import LoginForm from "./login-form";
 export const instant = false;
 
 type LoginPageProps = {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string | string[] }>;
 };
+
+function getInternalReturnPath(value: string | string[] | undefined): string {
+  if (typeof value !== "string" || /[\\\u0000-\u001f]/.test(value)) return "/";
+
+  try {
+    const destination = new URL(value, "http://doctor-tracker.invalid");
+    if (destination.origin !== "http://doctor-tracker.invalid") return "/";
+    return `${destination.pathname}${destination.search}`;
+  } catch {
+    return "/";
+  }
+}
 
 export default function LoginPage({ searchParams }: LoginPageProps) {
   return (
@@ -23,7 +35,7 @@ async function LoginPageContent({ searchParams }: LoginPageProps) {
   if (admin) redirect("/");
 
   const params = await searchParams;
-  const nextPath = params.next?.startsWith("/") && !params.next.startsWith("//") ? params.next : "/";
+  const nextPath = getInternalReturnPath(params.next);
 
   return (
     <main className="login-page">

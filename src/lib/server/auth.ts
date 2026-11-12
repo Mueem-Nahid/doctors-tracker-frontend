@@ -1,13 +1,9 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import type { Admin } from "@/types/auth";
 
-export type Admin = {
-  _id: string;
-  name: string;
-  email: string;
-  role: "admin";
-};
+export type { Admin } from "@/types/auth";
 
 const backendOrigin =
   process.env.BACKEND_ORIGIN ??
@@ -37,6 +33,6 @@ export async function getCurrentAdmin(): Promise<Admin | null> {
 
 export async function requireAdmin(): Promise<Admin> {
   const admin = await getCurrentAdmin();
-  if (!admin) redirect("/login?next=/");
+  if (!admin) redirect("/login?next=/dashboard");
   return admin;
 }

@@ -19,11 +19,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          id="theme-preference"
+          dangerouslySetInnerHTML={{
+            __html: `try { const theme = localStorage.getItem("dt-theme"); const dark = theme ? theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; document.documentElement.classList.toggle("dark", dark); } catch {}`,
+          }}
+        />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

@@ -3,7 +3,7 @@ export default function DashboardPage() {
     <section className="page-content" aria-labelledby="page-title">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">OVERVIEW</p>
+          <p className="eyebrow">Overview</p>
           <h1 id="page-title">Dashboard</h1>
           <p className="page-description">Your clinic overview will appear here.</p>
         </div>

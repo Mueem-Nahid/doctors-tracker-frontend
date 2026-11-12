@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from "react";
-import AppShell from "@/components/app-shell";
+import { AppShellTemplate } from "@/components/templates/app-shell-template";
 import { requireAdmin } from "@/lib/server/auth";
 
 export const instant = false;
@@ -14,5 +14,5 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
 async function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
   const admin = await requireAdmin();
-  return <AppShell admin={admin}>{children}</AppShell>;
+  return <AppShellTemplate admin={admin}>{children}</AppShellTemplate>;
 }

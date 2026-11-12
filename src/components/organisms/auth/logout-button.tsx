@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/api";
+import { Button } from "@/components/atoms/button";
+import { apiFetch, ApiError } from "@/lib/api";
 
-export default function LogoutButton() {
+export function LogoutButton() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -16,8 +17,10 @@ export default function LogoutButton() {
       await apiFetch<void>("/auth/logout", { method: "POST" });
       router.replace("/login");
       router.refresh();
-    } catch {
-      setError("Couldn't connect to the sign-out service. Try again.");
+    } catch (logoutError) {
+      setError(logoutError instanceof ApiError
+        ? "Couldn't sign out. Try again."
+        : "Couldn't connect to the sign-out service. Try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -25,9 +28,9 @@ export default function LogoutButton() {
 
   return (
     <div className="logout-control">
-      <button className="logout-button" type="button" onClick={logout} disabled={isSubmitting}>
+      <Button className="logout-button" disabled={isSubmitting} onClick={logout} type="button" variant="outline">
         {isSubmitting ? "Signing out…" : "Sign out"}
-      </button>
+      </Button>
       {error ? <span className="logout-error" role="alert">{error}</span> : null}
     </div>
   );

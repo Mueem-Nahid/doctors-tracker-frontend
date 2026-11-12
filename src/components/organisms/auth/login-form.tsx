@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { loginSchema } from "@doctor-tracker/contracts";
 import { Button } from "@/components/atoms/button";
 import { TextInput } from "@/components/atoms/text-input";
@@ -12,6 +13,7 @@ type LoginFormProps = { nextPath: string };
 
 export function LoginForm({ nextPath }: LoginFormProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const errorRef = useRef<HTMLParagraphElement>(null);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
@@ -51,6 +53,8 @@ export function LoginForm({ nextPath }: LoginFormProps) {
         method: "POST",
         body: JSON.stringify(parsed.data),
       });
+      queryClient.clear();
+      window.dispatchEvent(new Event("doctor-tracker:session-restored"));
       router.replace(nextPath);
       router.refresh();
     } catch (submitError) {

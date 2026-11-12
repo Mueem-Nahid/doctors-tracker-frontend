@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/atoms/button";
 import { apiFetch, ApiError } from "@/lib/api";
 
 export function LogoutButton() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,6 +17,8 @@ export function LogoutButton() {
     setError("");
     try {
       await apiFetch<void>("/auth/logout", { method: "POST" });
+      await queryClient.cancelQueries();
+      queryClient.clear();
       router.replace("/login");
       router.refresh();
     } catch (logoutError) {

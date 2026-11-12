@@ -32,9 +32,20 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 
   if (!response.ok) {
     const payload = (await response.json().catch(() => ({}))) as ApiErrorBody;
+    const code = payload.error?.code ?? "INTERNAL";
+
+    if (
+      response.status === 401 &&
+      code !== "INVALID_CREDENTIALS" &&
+      typeof window !== "undefined"
+    ) {
+      const returnPath = `${window.location.pathname}${window.location.search}`;
+      window.location.assign(`/login?next=${encodeURIComponent(returnPath)}`);
+    }
+
     throw new ApiError(
       response.status,
-      payload.error?.code ?? "INTERNAL",
+      code,
       payload.error?.message ?? "Something went wrong",
       payload.error?.fields,
     );

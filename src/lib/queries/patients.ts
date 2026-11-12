@@ -6,7 +6,7 @@ import { qk } from "@/lib/queries/keys";
 function toSearch(params: Partial<PatientListQuery>) {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === "") return;
+    if (value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) return;
     search.set(key, Array.isArray(value) ? value.join(",") : String(value));
   });
   return search.toString();

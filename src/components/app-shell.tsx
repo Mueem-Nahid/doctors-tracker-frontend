@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/server/auth";
+import type { ReactNode } from "react";
+import type { Admin } from "@/lib/server/auth";
 import LogoutButton from "@/components/logout-button";
 
-const navigation = ["Dashboard", "Doctors", "Patients"];
+const navigation = [
+  { label: "Dashboard", href: "/" },
+  { label: "Doctors", href: "/doctors" },
+  { label: "Patients", href: "/patients" },
+];
 
-export default async function Home() {
-  const admin = await requireAdmin();
+export default function AppShell({ admin, children }: { admin: Admin; children: ReactNode }) {
   return (
     <div className="app-frame">
       <aside className="sidebar" aria-label="Main navigation">
@@ -13,31 +17,28 @@ export default async function Home() {
           <span className="brand-mark" aria-hidden="true">+</span>
           <span>Doctor Tracker</span>
         </Link>
-
         <p className="nav-caption">Workspace</p>
         <nav className="nav-list">
           {navigation.map((item, index) => (
             <Link
               aria-current={index === 0 ? "page" : undefined}
               className={`nav-link${index === 0 ? " nav-link-active" : ""}`}
-              href={index === 0 ? "/" : `/${item.toLowerCase()}`}
-              key={item}
+              href={item.href}
+              key={item.href}
             >
               <span className="nav-indicator" aria-hidden="true" />
-              {item}
+              {item.label}
             </Link>
           ))}
         </nav>
-
         <div className="sidebar-footer">
-          <span className="avatar" aria-hidden="true">A</span>
+          <span className="avatar" aria-hidden="true">{admin.name.slice(0, 1).toUpperCase()}</span>
           <span className="admin-label">
             <strong>{admin.name}</strong>
             <small>Administrator</small>
           </span>
         </div>
       </aside>
-
       <main className="main-panel">
         <header className="topbar">
           <span className="topbar-context">Care operations</span>
@@ -46,25 +47,7 @@ export default async function Home() {
             <LogoutButton />
           </div>
         </header>
-
-        <section className="page-content" aria-labelledby="page-title">
-          <div className="page-heading">
-            <div>
-              <p className="eyebrow">OVERVIEW</p>
-              <h1 id="page-title">Dashboard</h1>
-              <p className="page-description">Your clinic overview will appear here.</p>
-            </div>
-            <span className="date-pill">Last 30 days</span>
-          </div>
-
-          <div className="setup-card">
-            <span className="setup-mark" aria-hidden="true">✓</span>
-            <div>
-              <h2>Application shell is ready</h2>
-              <p>Doctor and patient activity will appear once the API features are connected.</p>
-            </div>
-          </div>
-        </section>
+        {children}
       </main>
     </div>
   );

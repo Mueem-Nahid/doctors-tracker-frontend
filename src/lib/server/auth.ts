@@ -24,17 +24,15 @@ export async function getCurrentAdmin(): Promise<Admin | null> {
 
   if (!sessionCookie) return null;
 
-  try {
-    const response = await fetch(`${backendOrigin}/api/v1/auth/me`, {
-      headers: { cookie: `${sessionCookie.name}=${sessionCookie.value}` },
-      cache: "no-store",
-    });
-    if (!response.ok) return null;
-    const payload = (await response.json()) as { data: Admin };
-    return payload.data;
-  } catch {
-    return null;
-  }
+  const response = await fetch(`${backendOrigin}/api/v1/auth/me`, {
+    headers: { cookie: `${sessionCookie.name}=${sessionCookie.value}` },
+    cache: "no-store",
+  });
+  if (response.status === 401) return null;
+  if (!response.ok) throw new Error("The authentication service could not verify this session");
+
+  const payload = (await response.json()) as { data: Admin };
+  return payload.data;
 }
 
 export async function requireAdmin(): Promise<Admin> {

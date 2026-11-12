@@ -6,7 +6,9 @@ const frontendDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    const backendOrigin = process.env.BACKEND_ORIGIN;
+    const backendOrigin =
+      process.env.BACKEND_ORIGIN ??
+      (process.env.NODE_ENV === "development" ? "http://localhost:4000" : undefined);
 
     if (!backendOrigin) {
       return [];

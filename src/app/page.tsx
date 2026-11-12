@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { requireAdmin } from "@/lib/server/auth";
+import LogoutButton from "@/components/logout-button";
 
 const navigation = ["Dashboard", "Doctors", "Patients"];
 
-export default function Home() {
+export default async function Home() {
+  const admin = await requireAdmin();
   return (
     <div className="app-frame">
       <aside className="sidebar" aria-label="Main navigation">
@@ -29,8 +32,8 @@ export default function Home() {
         <div className="sidebar-footer">
           <span className="avatar" aria-hidden="true">A</span>
           <span className="admin-label">
-            <strong>Administrator</strong>
-            <small>Admin account</small>
+            <strong>{admin.name}</strong>
+            <small>Administrator</small>
           </span>
         </div>
       </aside>
@@ -38,7 +41,10 @@ export default function Home() {
       <main className="main-panel">
         <header className="topbar">
           <span className="topbar-context">Care operations</span>
-          <span className="session-status"><span /> Workspace setup</span>
+          <div className="topbar-actions">
+            <span className="session-status"><span /> Signed in</span>
+            <LogoutButton />
+          </div>
         </header>
 
         <section className="page-content" aria-labelledby="page-title">

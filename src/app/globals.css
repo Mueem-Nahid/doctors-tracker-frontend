@@ -272,6 +272,7 @@ button, input { font: inherit; }
 .data-table td small { display: block; margin-top: var(--space-1); color: var(--muted-foreground); }
 .table-primary-link { color: var(--secondary-foreground); font-weight: 600; }
 .table-primary-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.row-actions { display: flex; align-items: center; gap: var(--space-2); }
 .table-message { display: grid; min-height: 11rem; align-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-6); color: var(--muted-foreground); text-align: center; }
 .table-message p { margin: 0; }
 .table-footer { display: flex; min-height: 4rem; align-items: center; justify-content: space-between; gap: var(--space-3); border-top: 1px solid var(--border); padding: var(--space-3) var(--space-4); color: var(--muted-foreground); }
@@ -286,6 +287,9 @@ button, input { font: inherit; }
 .record-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
 .record-form .form-field:has(textarea), .record-form .dialog-actions, .record-form > .login-error { grid-column: 1 / -1; }
 .record-form textarea { min-height: 6rem; resize: vertical; padding: var(--space-3); }
+.doctor-select-stack { display: grid; gap: var(--space-2); }
+.doctor-select-stack select { width: 100%; }
+.patient-sheet { width: min(100%, 44rem); }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); padding-top: var(--space-2); }
 .back-link { display: inline-block; margin: 0 0 var(--space-4); color: var(--muted-foreground); }
 .back-link:hover { color: var(--primary); }

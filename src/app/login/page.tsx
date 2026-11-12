@@ -1,13 +1,24 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentAdmin } from "@/lib/server/auth";
 import LoginForm from "./login-form";
 
+export const instant = false;
+
 type LoginPageProps = {
   searchParams: Promise<{ next?: string }>;
 };
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
+export default function LoginPage({ searchParams }: LoginPageProps) {
+  return (
+    <Suspense fallback={<div className="route-loading" role="status">Loading sign in…</div>}>
+      <LoginPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function LoginPageContent({ searchParams }: LoginPageProps) {
   const admin = await getCurrentAdmin();
   if (admin) redirect("/");
 

@@ -4,15 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "npm run contracts:build && next build --webpack",
+    "contracts:build": "tsc -p packages/contracts/tsconfig.json",
     "start": "next start",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "npm run contracts:build && tsc -p tsconfig.json --noEmit",
     "lint": "eslint",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" next.config.ts",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" next.config.ts"
   },
   "dependencies": {
-    "@doctor-tracker/contracts": "*",
+    "@doctor-tracker/contracts": "file:packages/contracts",
     "@tanstack/react-query": "^5.107.1",
     "next": "16.4.6",
     "react": "19.3.0",

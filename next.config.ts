@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
-    root: path.resolve(frontendDirectory, ".."),
+    root: frontendDirectory,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

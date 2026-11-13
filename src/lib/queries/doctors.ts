@@ -38,6 +38,7 @@ export function useCreateDoctorMutation() {
     onSuccess: async () => Promise.all([
       queryClient.invalidateQueries({ queryKey: qk.doctors.all }),
       queryClient.invalidateQueries({ queryKey: qk.meta.filters }),
+      queryClient.invalidateQueries({ queryKey: qk.dashboard.all }),
     ]),
   });
 }

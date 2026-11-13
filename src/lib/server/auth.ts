@@ -7,7 +7,7 @@ export type { Admin } from "@/types/auth";
 
 const backendOrigin =
   process.env.BACKEND_ORIGIN ??
-  (process.env.NODE_ENV === "development" ? "http://localhost:4000" : undefined);
+  (process.env.NODE_ENV === "development" ? "http://127.0.0.1:4000" : undefined);
 const cookieNames = ["doctor_tracker_session", "__Host-doctor_tracker_session"];
 
 export async function getCurrentAdmin(): Promise<Admin | null> {

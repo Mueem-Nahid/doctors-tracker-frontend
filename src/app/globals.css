@@ -1004,10 +1004,10 @@ input {
   box-shadow: var(--shadow-sm);
 }
 .trend-card {
-  grid-column: span 8;
+  grid-column: span 7;
 }
 .condition-card {
-  grid-column: span 4;
+  grid-column: span 5;
 }
 .rechart {
   width: 100%;
@@ -1101,7 +1101,7 @@ input {
 }
 .condition-chart {
   display: grid;
-  grid-template-columns: minmax(7rem, 0.9fr) minmax(7rem, 1.1fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: center;
   gap: var(--space-3);
   min-height: 13rem;
@@ -1131,8 +1131,12 @@ input {
   position: absolute;
   top: 50%;
   left: 50%;
+  z-index: 1;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+.donut-plot .recharts-tooltip-wrapper {
+  z-index: 2 !important;
 }
 .donut-center strong {
   font-size: var(--font-xl);
@@ -1145,6 +1149,7 @@ input {
 .condition-legend {
   display: grid;
   gap: var(--space-3);
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;

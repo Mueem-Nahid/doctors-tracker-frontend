@@ -137,8 +137,21 @@ export function ConditionDonut({
               ))}
             </Pie>
             <Tooltip
+              position={{ x: 4, y: 4 }}
+              allowEscapeViewBox={{ x: false, y: false }}
               formatter={(value, name) => [countFormat.format(Number(value)), String(name)]}
-              contentStyle={tooltipStyle}
+              contentStyle={{
+                ...tooltipStyle,
+                boxSizing: "border-box",
+                width: "7rem",
+                minWidth: 0,
+                maxWidth: "7rem",
+                padding: "0.375rem",
+                fontSize: "0.7rem",
+                whiteSpace: "normal",
+                overflowWrap: "anywhere",
+              }}
+              itemStyle={{ whiteSpace: "normal", overflowWrap: "anywhere" }}
             />
           </PieChart>
         </ResponsiveContainer>

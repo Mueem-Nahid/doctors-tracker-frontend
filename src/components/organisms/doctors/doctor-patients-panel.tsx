@@ -271,9 +271,19 @@ function PatientDialog({ doctorId, onClose }: { doctorId: string; onClose: () =>
       <TextInput
         id={`patient-${key}`}
         type={type}
+        inputMode={key === "phone" ? "numeric" : key === "age" ? "numeric" : undefined}
+        maxLength={key === "name" ? 120 : key === "phone" ? 11 : key === "email" ? 254 : 3}
+        min={key === "age" ? 0 : undefined}
+        max={key === "age" ? 120 : undefined}
         value={values[key]}
         aria-invalid={Boolean(errors[key])}
-        onChange={(event) => setValues((current) => ({ ...current, [key]: event.target.value }))}
+        onChange={(event) => {
+          const value =
+            key === "phone"
+              ? event.target.value.replace(/\D/g, "").slice(0, 11)
+              : event.target.value;
+          setValues((current) => ({ ...current, [key]: value }));
+        }}
       />
     </FormField>
   );
@@ -316,7 +326,7 @@ function PatientDialog({ doctorId, onClose }: { doctorId: string; onClose: () =>
               <option value="other">Other</option>
             </select>
           </FormField>
-          {textField("phone", "Phone")}
+          {textField("phone", "Phone (11 digits)")}
           {textField("email", "Email", "email")}
           <FormField label="Condition" htmlFor="patient-condition" error={errors.condition}>
             <select

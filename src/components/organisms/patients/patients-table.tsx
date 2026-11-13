@@ -549,9 +549,20 @@ function PatientForm({
       <TextInput
         id={`global-patient-${key}`}
         type={type}
+        inputMode={key === "phone" ? "numeric" : key === "age" ? "numeric" : undefined}
+        maxLength={key === "name" ? 120 : key === "phone" ? 11 : key === "email" ? 254 : 3}
+        min={key === "age" ? 0 : undefined}
+        max={key === "age" ? 120 : undefined}
         value={draft[key]}
         aria-invalid={Boolean(errors[key])}
-        onChange={(event) => set(key, event.target.value)}
+        onChange={(event) =>
+          set(
+            key,
+            (key === "phone"
+              ? event.target.value.replace(/\D/g, "").slice(0, 11)
+              : event.target.value) as Draft[typeof key],
+          )
+        }
       />
     </FormField>
   );
@@ -599,7 +610,7 @@ function PatientForm({
             <option value="other">Other</option>
           </select>
         </FormField>
-        {field("phone", "Phone")}
+        {field("phone", "Phone (11 digits)")}
         {field("email", "Email", "email")}
         <FormField label="Condition" htmlFor="global-patient-condition" error={errors.condition}>
           <select

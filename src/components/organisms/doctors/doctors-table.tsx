@@ -292,7 +292,7 @@ function DoctorDialog({ onClose }: { onClose: () => void }) {
     ["name", "Full name", "Dr. Amina Rahman"],
     ["specialization", "Specialization", "Cardiology"],
     ["hospital", "Hospital", "Central Hospital"],
-    ["phone", "Phone", "+880 1700 000000"],
+    ["phone", "Phone (11 digits)", "01700000000"],
     ["email", "Email", "doctor@example.com"],
   ];
   return (
@@ -325,13 +325,29 @@ function DoctorDialog({ onClose }: { onClose: () => void }) {
                 id={`doctor-${name}`}
                 name={name}
                 type={name === "email" ? "email" : "text"}
+                inputMode={name === "phone" ? "numeric" : undefined}
+                maxLength={
+                  name === "name"
+                    ? 120
+                    : name === "specialization"
+                      ? 100
+                      : name === "hospital"
+                        ? 160
+                        : name === "phone"
+                          ? 11
+                          : 254
+                }
                 autoComplete={name === "email" ? "email" : undefined}
                 placeholder={placeholder}
                 value={values[name] ?? ""}
                 aria-invalid={Boolean(errors[name])}
-                onChange={(event) =>
-                  setValues((current) => ({ ...current, [name]: event.target.value }))
-                }
+                onChange={(event) => {
+                  const value =
+                    name === "phone"
+                      ? event.target.value.replace(/\D/g, "").slice(0, 11)
+                      : event.target.value;
+                  setValues((current) => ({ ...current, [name]: value }));
+                }}
               />
             </FormField>
           ))}

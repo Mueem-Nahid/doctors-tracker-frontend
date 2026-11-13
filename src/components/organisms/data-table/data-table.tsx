@@ -23,12 +23,22 @@ export function DataTable<T>({
       <table className="data-table">
         <caption className="sr-only">{label}</caption>
         <thead>
-          <tr>{columns.map((column) => <th className={column.className} key={column.key} scope="col">{column.label}</th>)}</tr>
+          <tr>
+            {columns.map((column) => (
+              <th className={column.className} key={column.key} scope="col">
+                {column.label}
+              </th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
             <tr key={rowKey(row)}>
-              {columns.map((column) => <td className={column.className} key={column.key}>{column.render(row)}</td>)}
+              {columns.map((column) => (
+                <td className={column.className} key={column.key}>
+                  {column.render(row)}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>

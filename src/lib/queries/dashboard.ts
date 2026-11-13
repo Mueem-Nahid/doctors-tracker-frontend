@@ -6,7 +6,8 @@ import { qk } from "@/lib/queries/keys";
 export function useDashboardSummary(range: ReportingRange) {
   return useQuery({
     queryKey: qk.dashboard.summary(range),
-    queryFn: ({ signal }) => apiFetch<DashboardSummary>(`/dashboard/summary?range=${range}`, { signal }),
+    queryFn: ({ signal }) =>
+      apiFetch<DashboardSummary>(`/dashboard/summary?range=${range}`, { signal }),
     staleTime: 60_000,
   });
 }

@@ -3,15 +3,29 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
-import { doctorInputSchema, type DoctorInput, type DoctorListQuery } from "@doctor-tracker/contracts";
+import {
+  doctorInputSchema,
+  type DoctorInput,
+  type DoctorListQuery,
+} from "@doctor-tracker/contracts";
 import { Button } from "@/components/atoms/button";
 import { TextInput } from "@/components/atoms/text-input";
 import { FormField } from "@/components/molecules/form-field";
 import { DataTable } from "@/components/organisms/data-table/data-table";
 import { ApiError } from "@/lib/api";
-import { useCreateDoctorMutation, useDoctorFiltersQuery, useDoctorsQuery } from "@/lib/queries/doctors";
+import {
+  useCreateDoctorMutation,
+  useDoctorFiltersQuery,
+  useDoctorsQuery,
+} from "@/lib/queries/doctors";
 
-const emptyDoctor: DoctorInput = { name: "", specialization: "", hospital: "", phone: "", email: "" };
+const emptyDoctor: DoctorInput = {
+  name: "",
+  specialization: "",
+  hospital: "",
+  phone: "",
+  email: "",
+};
 
 function readParams(search: URLSearchParams): Partial<DoctorListQuery> {
   const page = Number(search.get("page") ?? "1");
@@ -32,23 +46,64 @@ export function DoctorsTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const params = useMemo(() => readParams(new URLSearchParams(searchParams.toString())), [searchParams]);
+  const params = useMemo(
+    () => readParams(new URLSearchParams(searchParams.toString())),
+    [searchParams],
+  );
   const doctors = useDoctorsQuery(params);
   const filters = useDoctorFiltersQuery();
   const [dialogOpen, setDialogOpen] = useState(false);
   const columns = [
-    { key: "doctor", label: "Doctor", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => <><Link className="table-primary-link" href={`/doctors/${doctor._id}`}>{doctor.name}</Link><small>{doctor.email}</small></> },
-    { key: "specialization", label: "Specialization", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.specialization },
-    { key: "hospital", label: "Hospital", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.hospital },
-    { key: "phone", label: "Contact", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.phone },
-    { key: "patients", label: "Patients", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => <span className="tabular">{doctor.patientCount}</span> },
-    { key: "added", label: "Added", render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(doctor.createdAt)) },
+    {
+      key: "doctor",
+      label: "Doctor",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => (
+        <>
+          <Link className="table-primary-link" href={`/doctors/${doctor._id}`}>
+            {doctor.name}
+          </Link>
+          <small>{doctor.email}</small>
+        </>
+      ),
+    },
+    {
+      key: "specialization",
+      label: "Specialization",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.specialization,
+    },
+    {
+      key: "hospital",
+      label: "Hospital",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.hospital,
+    },
+    {
+      key: "phone",
+      label: "Contact",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => doctor.phone,
+    },
+    {
+      key: "patients",
+      label: "Patients",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) => (
+        <span className="tabular">{doctor.patientCount}</span>
+      ),
+    },
+    {
+      key: "added",
+      label: "Added",
+      render: (doctor: NonNullable<typeof doctors.data>["data"][number]) =>
+        new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+          new Date(doctor.createdAt),
+        ),
+    },
   ];
 
   function updateParam(key: string, value: string | string[]) {
     const next = new URLSearchParams(searchParams.toString());
     next.delete(key);
-    (Array.isArray(value) ? value : [value]).filter(Boolean).forEach((item) => next.append(key, item));
+    (Array.isArray(value) ? value : [value])
+      .filter(Boolean)
+      .forEach((item) => next.append(key, item));
     if (key !== "page") next.delete("page");
     router.replace(`${pathname}${next.size ? `?${next}` : ""}`, { scroll: false });
   }
@@ -56,21 +111,149 @@ export function DoctorsTable() {
   return (
     <section className="page-content" aria-labelledby="page-title">
       <div className="page-heading">
-        <div><p className="eyebrow">Directory</p><h1 id="page-title">Doctors</h1><p className="page-description">Search your directory and keep patient care organized.</p></div>
+        <div>
+          <p className="eyebrow">Directory</p>
+          <h1 id="page-title">Doctors</h1>
+          <p className="page-description">Search your directory and keep patient care organized.</p>
+        </div>
         <Button onClick={() => setDialogOpen(true)}>Add doctor</Button>
       </div>
       <div className="filter-toolbar">
-        <label className="search-control"><span className="sr-only">Search doctors</span><TextInput value={params.q ?? ""} placeholder="Search name, email, hospital or phone" onChange={(event) => updateParam("q", event.target.value)} /></label>
-        <label className="filter-control"><span>Specialization</span><select multiple value={params.specialization ?? []} onChange={(event) => updateParam("specialization", Array.from(event.currentTarget.selectedOptions, (option) => option.value))}>{(filters.data?.specializations ?? []).map((value) => <option key={value}>{value}</option>)}</select></label>
-        <label className="filter-control"><span>Hospital</span><select multiple value={params.hospital ?? []} onChange={(event) => updateParam("hospital", Array.from(event.currentTarget.selectedOptions, (option) => option.value))}>{(filters.data?.hospitals ?? []).map((value) => <option key={value}>{value}</option>)}</select></label>
-        <label className="filter-control"><span>Added from</span><TextInput type="date" value={params.from ?? ""} onChange={(event) => updateParam("from", event.target.value)} /></label>
-        <label className="filter-control"><span>To</span><TextInput type="date" value={params.to ?? ""} onChange={(event) => updateParam("to", event.target.value)} /></label>
-        <label className="filter-control"><span>Sort</span><select value={params.sort ?? "createdAt.desc"} onChange={(event) => updateParam("sort", event.target.value)}><option value="createdAt.desc">Recently added</option><option value="name.asc">Name A–Z</option><option value="name.desc">Name Z–A</option><option value="patients.desc">Most patients</option><option value="patients.asc">Fewest patients</option></select></label>
+        <label className="search-control">
+          <span className="sr-only">Search doctors</span>
+          <TextInput
+            value={params.q ?? ""}
+            placeholder="Search name, email, hospital or phone"
+            onChange={(event) => updateParam("q", event.target.value)}
+          />
+        </label>
+        <label className="filter-control">
+          <span>Specialization</span>
+          <select
+            multiple
+            value={params.specialization ?? []}
+            onChange={(event) =>
+              updateParam(
+                "specialization",
+                Array.from(event.currentTarget.selectedOptions, (option) => option.value),
+              )
+            }
+          >
+            {(filters.data?.specializations ?? []).map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <label className="filter-control">
+          <span>Hospital</span>
+          <select
+            multiple
+            value={params.hospital ?? []}
+            onChange={(event) =>
+              updateParam(
+                "hospital",
+                Array.from(event.currentTarget.selectedOptions, (option) => option.value),
+              )
+            }
+          >
+            {(filters.data?.hospitals ?? []).map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </select>
+        </label>
+        <label className="filter-control">
+          <span>Added from</span>
+          <TextInput
+            type="date"
+            value={params.from ?? ""}
+            onChange={(event) => updateParam("from", event.target.value)}
+          />
+        </label>
+        <label className="filter-control">
+          <span>To</span>
+          <TextInput
+            type="date"
+            value={params.to ?? ""}
+            onChange={(event) => updateParam("to", event.target.value)}
+          />
+        </label>
+        <label className="filter-control">
+          <span>Sort</span>
+          <select
+            value={params.sort ?? "createdAt.desc"}
+            onChange={(event) => updateParam("sort", event.target.value)}
+          >
+            <option value="createdAt.desc">Recently added</option>
+            <option value="name.asc">Name A–Z</option>
+            <option value="name.desc">Name Z–A</option>
+            <option value="patients.desc">Most patients</option>
+            <option value="patients.asc">Fewest patients</option>
+          </select>
+        </label>
       </div>
-      {doctors.isError ? <div className="setup-card" role="alert"><p>Couldn’t load doctors. Check your connection and try again.</p><Button variant="outline" onClick={() => void doctors.refetch()}>Retry</Button></div> : null}
+      {doctors.isError ? (
+        <div className="setup-card" role="alert">
+          <p>Couldn’t load doctors. Check your connection and try again.</p>
+          <Button variant="outline" onClick={() => void doctors.refetch()}>
+            Retry
+          </Button>
+        </div>
+      ) : null}
       <div className="data-card">
-        {doctors.isPending ? <p className="table-message" role="status">Loading doctors…</p> : doctors.data?.data.length ? <DataTable columns={columns} rows={doctors.data.data} rowKey={(doctor) => doctor._id} label="Doctors" /> : <div className="table-message"><strong>{params.q || params.specialization?.length || params.hospital?.length ? "No doctors match your filters." : "No doctors yet."}</strong><p>Add your first doctor to start tracking patients.</p></div>}
-        <div className="table-footer"><span>{doctors.data?.meta.total ?? 0} doctors</span><div><label>Rows <select value={params.pageSize ?? 10} onChange={(event) => updateParam("pageSize", event.target.value)}><option>10</option><option>20</option><option>50</option></select></label><Button variant="outline" disabled={(params.page ?? 1) <= 1} onClick={() => updateParam("page", String((params.page ?? 1) - 1))}>Previous</Button><span>Page {params.page ?? 1} of {Math.max(1, doctors.data?.meta.pageCount ?? 1)}</span><Button variant="outline" disabled={(params.page ?? 1) >= (doctors.data?.meta.pageCount ?? 1)} onClick={() => updateParam("page", String((params.page ?? 1) + 1))}>Next</Button></div></div>
+        {doctors.isPending ? (
+          <p className="table-message" role="status">
+            Loading doctors…
+          </p>
+        ) : doctors.data?.data.length ? (
+          <DataTable
+            columns={columns}
+            rows={doctors.data.data}
+            rowKey={(doctor) => doctor._id}
+            label="Doctors"
+          />
+        ) : (
+          <div className="table-message">
+            <strong>
+              {params.q || params.specialization?.length || params.hospital?.length
+                ? "No doctors match your filters."
+                : "No doctors yet."}
+            </strong>
+            <p>Add your first doctor to start tracking patients.</p>
+          </div>
+        )}
+        <div className="table-footer">
+          <span>{doctors.data?.meta.total ?? 0} doctors</span>
+          <div>
+            <label>
+              Rows{" "}
+              <select
+                value={params.pageSize ?? 10}
+                onChange={(event) => updateParam("pageSize", event.target.value)}
+              >
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </label>
+            <Button
+              variant="outline"
+              disabled={(params.page ?? 1) <= 1}
+              onClick={() => updateParam("page", String((params.page ?? 1) - 1))}
+            >
+              Previous
+            </Button>
+            <span>
+              Page {params.page ?? 1} of {Math.max(1, doctors.data?.meta.pageCount ?? 1)}
+            </span>
+            <Button
+              variant="outline"
+              disabled={(params.page ?? 1) >= (doctors.data?.meta.pageCount ?? 1)}
+              onClick={() => updateParam("page", String((params.page ?? 1) + 1))}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
       {dialogOpen ? <DoctorDialog onClose={() => setDialogOpen(false)} /> : null}
     </section>
@@ -84,16 +267,89 @@ function DoctorDialog({ onClose }: { onClose: () => void }) {
   const [message, setMessage] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setErrors({}); setMessage("");
+    event.preventDefault();
+    setErrors({});
+    setMessage("");
     const parsed = doctorInputSchema.safeParse(values);
-    if (!parsed.success) { setErrors(Object.fromEntries(parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message]))); return; }
-    try { await mutation.mutateAsync(parsed.data); onClose(); }
-    catch (error) {
+    if (!parsed.success) {
+      setErrors(
+        Object.fromEntries(
+          parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message]),
+        ),
+      );
+      return;
+    }
+    try {
+      await mutation.mutateAsync(parsed.data);
+      onClose();
+    } catch (error) {
       if (error instanceof ApiError && error.fields) setErrors(error.fields);
       else setMessage(error instanceof Error ? error.message : "Couldn’t save the doctor.");
     }
   }
 
-  const fields: Array<[keyof DoctorInput, string, string]> = [["name", "Full name", "Dr. Amina Rahman"], ["specialization", "Specialization", "Cardiology"], ["hospital", "Hospital", "Central Hospital"], ["phone", "Phone", "+880 1700 000000"], ["email", "Email", "doctor@example.com"]];
-  return <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><section className="form-dialog" role="dialog" aria-modal="true" aria-labelledby="doctor-dialog-title"><div className="dialog-heading"><div><p className="eyebrow">Doctor profile</p><h2 id="doctor-dialog-title">Add doctor</h2></div><Button variant="ghost" onClick={onClose} aria-label="Close dialog">×</Button></div><form className="record-form" onSubmit={submit} noValidate>{fields.map(([name, label, placeholder]) => <FormField key={name} label={label} htmlFor={`doctor-${name}`} error={errors[name]}><TextInput id={`doctor-${name}`} name={name} type={name === "email" ? "email" : "text"} autoComplete={name === "email" ? "email" : undefined} placeholder={placeholder} value={values[name] ?? ""} aria-invalid={Boolean(errors[name])} onChange={(event) => setValues((current) => ({ ...current, [name]: event.target.value }))} /></FormField>)}{message ? <p className="login-error" role="alert">{message}</p> : null}<div className="dialog-actions"><Button type="button" variant="outline" onClick={onClose}>Cancel</Button><Button disabled={mutation.isPending}>{mutation.isPending ? "Saving…" : "Save doctor"}</Button></div></form></section></div>;
+  const fields: Array<[keyof DoctorInput, string, string]> = [
+    ["name", "Full name", "Dr. Amina Rahman"],
+    ["specialization", "Specialization", "Cardiology"],
+    ["hospital", "Hospital", "Central Hospital"],
+    ["phone", "Phone", "+880 1700 000000"],
+    ["email", "Email", "doctor@example.com"],
+  ];
+  return (
+    <div
+      className="dialog-backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        className="form-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="doctor-dialog-title"
+      >
+        <div className="dialog-heading">
+          <div>
+            <p className="eyebrow">Doctor profile</p>
+            <h2 id="doctor-dialog-title">Add doctor</h2>
+          </div>
+          <Button variant="ghost" onClick={onClose} aria-label="Close dialog">
+            ×
+          </Button>
+        </div>
+        <form className="record-form" onSubmit={submit} noValidate>
+          {fields.map(([name, label, placeholder]) => (
+            <FormField key={name} label={label} htmlFor={`doctor-${name}`} error={errors[name]}>
+              <TextInput
+                id={`doctor-${name}`}
+                name={name}
+                type={name === "email" ? "email" : "text"}
+                autoComplete={name === "email" ? "email" : undefined}
+                placeholder={placeholder}
+                value={values[name] ?? ""}
+                aria-invalid={Boolean(errors[name])}
+                onChange={(event) =>
+                  setValues((current) => ({ ...current, [name]: event.target.value }))
+                }
+              />
+            </FormField>
+          ))}
+          {message ? (
+            <p className="login-error" role="alert">
+              {message}
+            </p>
+          ) : null}
+          <div className="dialog-actions">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button disabled={mutation.isPending}>
+              {mutation.isPending ? "Saving…" : "Save doctor"}
+            </Button>
+          </div>
+        </form>
+      </section>
+    </div>
+  );
 }

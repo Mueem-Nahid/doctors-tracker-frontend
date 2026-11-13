@@ -21,7 +21,9 @@ export function AppHeader({ admin, signOut }: { admin: Admin; signOut: ReactNode
     <header className="topbar">
       <details className="mobile-navigation">
         <summary aria-label="Toggle navigation menu" className="mobile-nav-trigger">
-          <svg aria-hidden="true" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" /></svg>
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="M3 5h14M3 10h14M3 15h14" />
+          </svg>
           <span className="sr-only">Navigation</span>
         </summary>
         <nav aria-label="Mobile navigation" className="mobile-nav-panel">

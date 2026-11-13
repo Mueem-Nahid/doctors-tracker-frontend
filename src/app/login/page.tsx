@@ -24,7 +24,13 @@ function getInternalReturnPath(value: string | string[] | undefined): string {
 
 export default function LoginPage({ searchParams }: LoginPageProps) {
   return (
-    <Suspense fallback={<div className="route-loading" role="status">Loading sign in…</div>}>
+    <Suspense
+      fallback={
+        <div className="route-loading" role="status">
+          Loading sign in…
+        </div>
+      }
+    >
       <LoginPageContent searchParams={searchParams} />
     </Suspense>
   );

@@ -22,9 +22,11 @@ export function LogoutButton() {
       router.replace("/login");
       router.refresh();
     } catch (logoutError) {
-      setError(logoutError instanceof ApiError
-        ? "Couldn't sign out. Try again."
-        : "Couldn't connect to the sign-out service. Try again.");
+      setError(
+        logoutError instanceof ApiError
+          ? "Couldn't sign out. Try again."
+          : "Couldn't connect to the sign-out service. Try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -32,10 +34,20 @@ export function LogoutButton() {
 
   return (
     <div className="logout-control">
-      <Button className="logout-button" disabled={isSubmitting} onClick={logout} type="button" variant="outline">
+      <Button
+        className="logout-button"
+        disabled={isSubmitting}
+        onClick={logout}
+        type="button"
+        variant="outline"
+      >
         {isSubmitting ? "Signing out…" : "Sign out"}
       </Button>
-      {error ? <span className="logout-error" role="alert">{error}</span> : null}
+      {error ? (
+        <span className="logout-error" role="alert">
+          {error}
+        </span>
+      ) : null}
     </div>
   );
 }

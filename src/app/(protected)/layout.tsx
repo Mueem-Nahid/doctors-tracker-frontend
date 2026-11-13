@@ -6,7 +6,13 @@ export const instant = false;
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={<div className="route-loading" role="status">Loading your workspace…</div>}>
+    <Suspense
+      fallback={
+        <div className="route-loading" role="status">
+          Loading your workspace…
+        </div>
+      }
+    >
       <AuthenticatedWorkspace>{children}</AuthenticatedWorkspace>
     </Suspense>
   );

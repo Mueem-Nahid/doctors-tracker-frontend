@@ -40,9 +40,11 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
       typeof window !== "undefined"
     ) {
       const returnPath = `${window.location.pathname}${window.location.search}`;
-      window.dispatchEvent(new CustomEvent("doctor-tracker:session-expired", {
-        detail: { returnPath },
-      }));
+      window.dispatchEvent(
+        new CustomEvent("doctor-tracker:session-expired", {
+          detail: { returnPath },
+        }),
+      );
     }
 
     throw new ApiError(

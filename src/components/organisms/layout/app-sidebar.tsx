@@ -34,7 +34,9 @@ export function AppSidebar({ admin }: { admin: Admin }) {
               key={item.href}
               title={item.label}
             >
-              <span aria-hidden="true" className="nav-icon"><Icon /></span>
+              <span aria-hidden="true" className="nav-icon">
+                <Icon />
+              </span>
               <span className="nav-link-label">{item.label}</span>
             </Link>
           );

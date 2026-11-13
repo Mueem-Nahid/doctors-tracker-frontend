@@ -3,7 +3,13 @@ import { DoctorDetail } from "@/components/organisms/doctors/doctor-detail";
 
 export default function DoctorPage({ params }: { params: Promise<{ id: string }> }) {
   return (
-    <Suspense fallback={<section className="page-content route-loading" role="status">Loading doctor…</section>}>
+    <Suspense
+      fallback={
+        <section className="page-content route-loading" role="status">
+          Loading doctor…
+        </section>
+      }
+    >
       <DoctorPageContent params={params} />
     </Suspense>
   );

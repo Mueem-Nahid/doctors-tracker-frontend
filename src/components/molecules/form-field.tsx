@@ -14,10 +14,15 @@ export function FormField({ children, error, htmlFor, label, required = false }:
   return (
     <div className="form-field">
       <label className="form-label" htmlFor={htmlFor}>
-        {label}{required ? <span aria-hidden="true"> *</span> : null}
+        {label}
+        {required ? <span aria-hidden="true"> *</span> : null}
       </label>
       {children}
-      {error ? <p className="field-error" id={errorId}>{error}</p> : null}
+      {error ? (
+        <p className="field-error" id={errorId}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

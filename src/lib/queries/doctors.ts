@@ -24,21 +24,29 @@ export function useDoctorsQuery(params: Partial<DoctorListQuery>) {
 }
 
 export function useDoctorQuery(id: string) {
-  return useQuery({ queryKey: qk.doctors.detail(id), queryFn: ({ signal }) => apiFetch<Doctor>(`/doctors/${id}`, { signal }) });
+  return useQuery({
+    queryKey: qk.doctors.detail(id),
+    queryFn: ({ signal }) => apiFetch<Doctor>(`/doctors/${id}`, { signal }),
+  });
 }
 
 export function useDoctorFiltersQuery() {
-  return useQuery({ queryKey: qk.meta.filters, queryFn: ({ signal }) => apiFetch<FilterOptions>("/meta/filters", { signal }) });
+  return useQuery({
+    queryKey: qk.meta.filters,
+    queryFn: ({ signal }) => apiFetch<FilterOptions>("/meta/filters", { signal }),
+  });
 }
 
 export function useCreateDoctorMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: DoctorInput) => apiFetch<Doctor>("/doctors", { method: "POST", body: JSON.stringify(input) }),
-    onSuccess: async () => Promise.all([
-      queryClient.invalidateQueries({ queryKey: qk.doctors.all }),
-      queryClient.invalidateQueries({ queryKey: qk.meta.filters }),
-      queryClient.invalidateQueries({ queryKey: qk.dashboard.all }),
-    ]),
+    mutationFn: (input: DoctorInput) =>
+      apiFetch<Doctor>("/doctors", { method: "POST", body: JSON.stringify(input) }),
+    onSuccess: async () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: qk.doctors.all }),
+        queryClient.invalidateQueries({ queryKey: qk.meta.filters }),
+        queryClient.invalidateQueries({ queryKey: qk.dashboard.all }),
+      ]),
   });
 }

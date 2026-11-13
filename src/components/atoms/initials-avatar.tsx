@@ -6,5 +6,9 @@ export function InitialsAvatar({ name }: { name: string }) {
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 
-  return <span aria-hidden="true" className="initials-avatar">{initials || "A"}</span>;
+  return (
+    <span aria-hidden="true" className="initials-avatar">
+      {initials || "A"}
+    </span>
+  );
 }

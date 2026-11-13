@@ -58,16 +58,22 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       router.replace(nextPath);
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof ApiError && submitError.code === "INVALID_CREDENTIALS"
-        ? "Invalid email or password"
-        : "Couldn't sign in. Check your connection and try again.");
+      setError(
+        submitError instanceof ApiError && submitError.code === "INVALID_CREDENTIALS"
+          ? "Invalid email or password"
+          : "Couldn't sign in. Check your connection and try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form aria-describedby={error ? "login-error" : undefined} className="login-form" onSubmit={handleSubmit}>
+    <form
+      aria-describedby={error ? "login-error" : undefined}
+      className="login-form"
+      onSubmit={handleSubmit}
+    >
       <FormField error={fieldErrors.email} htmlFor="email" label="Email" required>
         <TextInput
           aria-describedby={fieldErrors.email ? "email-error" : undefined}
@@ -105,7 +111,11 @@ export function LoginForm({ nextPath }: LoginFormProps) {
           </button>
         </div>
       </FormField>
-      {error ? <p className="login-error" id="login-error" ref={errorRef} role="alert" tabIndex={-1}>{error}</p> : null}
+      {error ? (
+        <p className="login-error" id="login-error" ref={errorRef} role="alert" tabIndex={-1}>
+          {error}
+        </p>
+      ) : null}
       <Button className="login-submit" disabled={isSubmitting} type="submit">
         {isSubmitting ? "Signing in…" : "Sign in"}
       </Button>

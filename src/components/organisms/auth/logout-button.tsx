@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/atoms/button";
+import { IconButton } from "@/components/atoms/icon-button";
 import { apiFetch, ApiError } from "@/lib/api";
 
 export function LogoutButton() {
@@ -34,15 +34,14 @@ export function LogoutButton() {
 
   return (
     <div className="logout-control">
-      <Button
-        className="logout-button"
+      <IconButton
+        icon="logout"
+        label={isSubmitting ? "Signing out…" : "Sign out"}
         disabled={isSubmitting}
+        aria-busy={isSubmitting}
         onClick={logout}
-        type="button"
         variant="outline"
-      >
-        {isSubmitting ? "Signing out…" : "Sign out"}
-      </Button>
+      />
       {error ? (
         <span className="logout-error" role="alert">
           {error}

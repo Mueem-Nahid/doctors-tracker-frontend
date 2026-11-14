@@ -1,5 +1,7 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
+import { IconButton } from "@/components/atoms/icon-button";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -100,15 +102,12 @@ export function LoginForm({ nextPath }: LoginFormProps) {
             required
             type={showPassword ? "text" : "password"}
           />
-          <button
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            aria-pressed={showPassword}
+          <IconButton
+            icon={showPassword ? "eyeOff" : "eye"}
+            label={showPassword ? "Hide password" : "Show password"}
             className="password-toggle"
             onClick={() => setShowPassword((shown) => !shown)}
-            type="button"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
+          />
         </div>
       </FormField>
       {error ? (
@@ -118,6 +117,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       ) : null}
       <Button className="login-submit" disabled={isSubmitting} type="submit">
         {isSubmitting ? "Signing in…" : "Sign in"}
+        <UiIcon name="forward" />
       </Button>
     </form>
   );

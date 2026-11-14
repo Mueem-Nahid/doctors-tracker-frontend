@@ -1,5 +1,7 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
+import { IconButton } from "@/components/atoms/icon-button";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
@@ -157,23 +159,21 @@ export function PatientsTable() {
       label: "Actions",
       render: (patient: PatientRow) => (
         <div className="row-actions">
-          <Button
-            variant="outline"
+          <IconButton
+            icon="edit"
+            label={`Edit ${patient.name}`}
             onClick={() => {
               setEditingId(patient._id);
               setOpen(true);
             }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="ghost"
+          />
+          <IconButton
+            icon="trash"
+            className="delete-action"
             disabled={remove.isPending}
-            aria-label={`Delete ${patient.name}`}
+            label={`Delete ${patient.name}`}
             onClick={() => void deletePatient(patient)}
-          >
-            Delete
-          </Button>
+          />
         </div>
       ),
     },
@@ -190,7 +190,6 @@ export function PatientsTable() {
     <section className="page-content" aria-labelledby="page-title">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Care directory</p>
           <h1 id="page-title">Patients</h1>
           <p className="page-description">
             Find patient records, update care details, and manage doctor assignments.
@@ -202,6 +201,7 @@ export function PatientsTable() {
             setOpen(true);
           }}
         >
+          <UiIcon name="plus" />
           Add patient
         </Button>
       </div>
@@ -288,6 +288,7 @@ export function PatientsTable() {
         <div className="setup-card" role="alert">
           <p>Couldn’t load patients. Check your connection and try again.</p>
           <Button variant="outline" onClick={() => void patients.refetch()}>
+            <UiIcon name="retry" />
             Retry
           </Button>
         </div>
@@ -328,23 +329,23 @@ export function PatientsTable() {
                 <option>50</option>
               </select>
             </label>
-            <Button
+            <IconButton
               variant="outline"
+              icon="previous"
+              label="Previous page"
               disabled={(params.page ?? 1) <= 1}
               onClick={() => update("page", String((params.page ?? 1) - 1))}
-            >
-              Previous
-            </Button>
+            />
             <span>
               Page {params.page ?? 1} of {Math.max(1, patients.data?.meta.pageCount ?? 1)}
             </span>
-            <Button
+            <IconButton
               variant="outline"
+              icon="next"
+              label="Next page"
               disabled={(params.page ?? 1) >= (patients.data?.meta.pageCount ?? 1)}
               onClick={() => update("page", String((params.page ?? 1) + 1))}
-            >
-              Next
-            </Button>
+            />
           </div>
         </div>
       </div>
@@ -363,6 +364,7 @@ function PatientSearch({ value, onCommit }: { value: string; onCommit: (value: s
   return (
     <label className="search-control">
       <span className="sr-only">Search patients</span>
+      <UiIcon name="search" />
       <TextInput
         value={searchText}
         placeholder="Search name, email or phone"
@@ -428,6 +430,7 @@ function PatientSheet({ patientId, onClose }: { patientId?: string; onClose: () 
         <div className="table-message" role="alert">
           Couldn’t load this patient.{" "}
           <Button variant="outline" onClick={() => void detail.refetch()}>
+            <UiIcon name="retry" />
             Retry
           </Button>
         </div>
@@ -468,12 +471,9 @@ function SheetFrame({
       >
         <div className="dialog-heading">
           <div>
-            <p className="eyebrow">Patient record</p>
             <h2 id="patient-sheet-title">{patientId ? "Edit patient" : "Add patient"}</h2>
           </div>
-          <Button variant="ghost" onClick={onClose} aria-label="Close sheet">
-            ×
-          </Button>
+          <IconButton icon="close" label="Close sheet" onClick={onClose} />
         </div>
         {children}
       </section>

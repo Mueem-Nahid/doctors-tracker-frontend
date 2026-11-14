@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
 import Link from "next/link";
 import { useDoctorQuery } from "@/lib/queries/doctors";
 import { DoctorPatientsPanel } from "@/components/organisms/doctors/doctor-patients-panel";
@@ -15,7 +16,9 @@ export function DoctorDetail({ doctorId }: { doctorId: string }) {
   if (doctor.isError || !doctor.data)
     return (
       <section className="page-content" role="alert">
-        <Link href="/doctors">← Back to doctors</Link>
+        <Link className="back-link" href="/doctors">
+          <UiIcon name="back" /> Back to doctors
+        </Link>
         <p>Couldn’t load this doctor. Check your connection and try again.</p>
       </section>
     );
@@ -23,7 +26,7 @@ export function DoctorDetail({ doctorId }: { doctorId: string }) {
   return (
     <section className="page-content" aria-labelledby="page-title">
       <Link className="back-link" href="/doctors">
-        ← Doctors
+        <UiIcon name="back" /> Doctors
       </Link>
       <div className="doctor-profile-card">
         <div className="doctor-profile-avatar" aria-hidden="true">
@@ -48,15 +51,21 @@ export function DoctorDetail({ doctorId }: { doctorId: string }) {
       </div>
       <div className="doctor-contact-grid">
         <div>
-          <span>Email</span>
+          <span>
+            <UiIcon name="email" /> Email
+          </span>
           <a href={`mailto:${item.email}`}>{item.email}</a>
         </div>
         <div>
-          <span>Phone</span>
+          <span>
+            <UiIcon name="phone" /> Phone
+          </span>
           <a href={`tel:${item.phone}`}>{item.phone}</a>
         </div>
         <div>
-          <span>Added</span>
+          <span>
+            <UiIcon name="calendar" /> Added
+          </span>
           <strong>
             {new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
               new Date(item.createdAt),

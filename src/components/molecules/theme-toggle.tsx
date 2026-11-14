@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { IconButton } from "@/components/atoms/icon-button";
 
 const themeChangeEvent = "doctor-tracker:theme-change";
 
@@ -28,14 +29,11 @@ export function ThemeToggle() {
   }
 
   return (
-    <button
-      aria-label="Toggle color theme"
-      aria-pressed={isDark}
+    <IconButton
+      icon={isDark ? "sun" : "moon"}
+      label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className="theme-toggle"
       onClick={toggleTheme}
-      type="button"
-    >
-      {isDark ? "Light mode" : "Dark mode"}
-    </button>
+    />
   );
 }

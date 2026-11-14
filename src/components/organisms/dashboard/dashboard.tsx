@@ -1,5 +1,7 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
+import { IconButton } from "@/components/atoms/icon-button";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -9,6 +11,8 @@ import {
   type DashboardSummary,
   type ReportingRange,
 } from "@doctor-tracker/contracts";
+import { StethoscopeIcon } from "@/components/atoms/icons/stethoscope-icon";
+import { UsersIcon } from "@/components/atoms/icons/users-icon";
 import { Button } from "@/components/atoms/button";
 import { useDashboardSummary } from "@/lib/queries/dashboard";
 
@@ -81,12 +85,13 @@ export function Dashboard() {
     <section className="page-content dashboard-content" aria-labelledby="page-title">
       <div className="page-heading dashboard-heading">
         <div>
-          <p className="eyebrow">Overview</p>
           <h1 id="page-title">Dashboard</h1>
           <p className="page-description">Clinic activity and patient workload at a glance.</p>
         </div>
         <label className="range-picker">
-          <span>Date range</span>
+          <span>
+            <UiIcon name="calendar" /> Date range
+          </span>
           <select
             aria-label="Dashboard date range"
             value={range}
@@ -107,6 +112,7 @@ export function Dashboard() {
             <p>Check your connection and retry.</p>
           </div>
           <Button variant="outline" onClick={() => void summary.refetch()}>
+            <UiIcon name="retry" />
             Retry
           </Button>
         </div>
@@ -134,14 +140,26 @@ function KpiGrid({ data }: { data: DashboardSummary }) {
   const change = kpis.newPatients.deltaPct;
   return (
     <div className="kpi-grid">
-      <Kpi label="Total doctors" value={kpis.totalDoctors} detail="Across the directory" />
-      <Kpi label="Total patients" value={kpis.totalPatients} detail="All current patient records" />
       <Kpi
+        icon={<StethoscopeIcon />}
+        label="Total doctors"
+        value={kpis.totalDoctors}
+        detail="Across the directory"
+      />
+      <Kpi
+        icon={<UsersIcon />}
+        label="Total patients"
+        value={kpis.totalPatients}
+        detail="All current patient records"
+      />
+      <Kpi
+        icon={<UiIcon name="chart" />}
         label="Average patients per doctor"
         value={kpis.avgPatientsPerDoctor.toLocaleString(undefined, { maximumFractionDigits: 2 })}
         detail="Based on all doctors"
       />
       <Kpi
+        icon={<UiIcon name="calendar" />}
         label="New patients"
         value={kpis.newPatients.value}
         detail={
@@ -153,10 +171,23 @@ function KpiGrid({ data }: { data: DashboardSummary }) {
     </div>
   );
 }
-function Kpi({ label, value, detail }: { label: string; value: number | string; detail: string }) {
+function Kpi({
+  label,
+  value,
+  detail,
+  icon,
+}: {
+  label: string;
+  value: number | string;
+  detail: string;
+  icon: ReactNode;
+}) {
   return (
     <article className="kpi-card">
-      <p>{label}</p>
+      <div className="kpi-card-heading">
+        <span className="kpi-icon">{icon}</span>
+        <p>{label}</p>
+      </div>
       <strong>{typeof value === "number" ? numberFormat.format(value) : value}</strong>
       <span>{detail}</span>
     </article>
@@ -185,14 +216,18 @@ function ChartCard({
           <h2 id={id}>{title}</h2>
           <p>{description}</p>
         </div>
-        <Button
-          variant="ghost"
+        <IconButton
+          variant="outline"
           className="chart-table-toggle"
+          icon={showTable ? "chart" : "table"}
+          label={
+            showTable
+              ? `View ${title.toLowerCase()} as chart`
+              : `View ${title.toLowerCase()} as table`
+          }
           aria-expanded={showTable}
           onClick={() => setShowTable((current) => !current)}
-        >
-          {showTable ? "View chart" : "View as table"}
-        </Button>
+        />
       </header>
       {showTable ? <div className="chart-table-wrap">{table}</div> : children}
     </section>
@@ -365,11 +400,10 @@ function RecentPatients({ rows }: { rows: DashboardSummary["recentPatients"] }) 
     <section className="recent-patients-card" aria-labelledby="recent-patients-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Latest activity</p>
           <h2 id="recent-patients-title">Recent patients</h2>
         </div>
         <Link className="table-primary-link" href="/patients">
-          View all patients →
+          View all patients <UiIcon name="forward" />
         </Link>
       </div>
       {rows.length ? (

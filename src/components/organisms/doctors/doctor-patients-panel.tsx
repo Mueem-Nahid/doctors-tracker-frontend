@@ -1,5 +1,7 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
+import { IconButton } from "@/components/atoms/icon-button";
 import { useMemo, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -107,14 +109,13 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
       key: "actions",
       label: <span className="sr-only">Actions</span>,
       render: (patient: NonNullable<typeof result.data>["data"][number]) => (
-        <Button
-          variant="ghost"
+        <IconButton
+          icon="trash"
+          className="delete-action"
           disabled={remove.isPending}
-          aria-label={`Delete ${patient.name}`}
+          label={`Delete ${patient.name}`}
           onClick={() => void deletePatient(patient._id, patient.name)}
-        >
-          Delete
-        </Button>
+        />
       ),
     },
   ];
@@ -142,14 +143,17 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
     <section className="patients-section" aria-labelledby="patients-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Care team</p>
           <h2 id="patients-title">Patients</h2>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>Add patient</Button>
+        <Button onClick={() => setDialogOpen(true)}>
+          <UiIcon name="plus" />
+          Add patient
+        </Button>
       </div>
       <div className="filter-toolbar compact-toolbar">
         <label className="search-control">
           <span className="sr-only">Search patients</span>
+          <UiIcon name="search" />
           <TextInput
             placeholder="Search patients"
             value={params.q ?? ""}
@@ -186,6 +190,7 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
           <div className="table-message" role="alert">
             Couldn’t load patients.{" "}
             <Button variant="outline" onClick={() => void result.refetch()}>
+              <UiIcon name="retry" />
               Retry
             </Button>
           </div>
@@ -213,23 +218,23 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
         <div className="table-footer">
           <span>{result.data?.meta.total ?? 0} patients</span>
           <div>
-            <Button
+            <IconButton
               variant="outline"
+              icon="previous"
+              label="Previous page"
               disabled={(params.page ?? 1) <= 1}
               onClick={() => update("patientPage", String((params.page ?? 1) - 1))}
-            >
-              Previous
-            </Button>
+            />
             <span>
               Page {params.page ?? 1} of {Math.max(1, result.data?.meta.pageCount ?? 1)}
             </span>
-            <Button
+            <IconButton
               variant="outline"
+              icon="next"
+              label="Next page"
               disabled={(params.page ?? 1) >= (result.data?.meta.pageCount ?? 1)}
               onClick={() => update("patientPage", String((params.page ?? 1) + 1))}
-            >
-              Next
-            </Button>
+            />
           </div>
         </div>
       </div>
@@ -303,12 +308,9 @@ function PatientDialog({ doctorId, onClose }: { doctorId: string; onClose: () =>
       >
         <div className="dialog-heading">
           <div>
-            <p className="eyebrow">Patient record</p>
             <h2 id="patient-dialog-title">Add patient</h2>
           </div>
-          <Button variant="ghost" onClick={onClose} aria-label="Close dialog">
-            ×
-          </Button>
+          <IconButton icon="close" label="Close dialog" onClick={onClose} />
         </div>
         <form className="record-form" onSubmit={submit} noValidate>
           {textField("name", "Full name")}

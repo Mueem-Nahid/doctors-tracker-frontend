@@ -46,7 +46,6 @@ async function LoginPageContent({ searchParams }: LoginPageProps) {
   return (
     <AuthTemplate>
       <div className="login-card">
-        <p className="eyebrow">Welcome back</p>
         <h1 id="login-title">Sign in to your account</h1>
         <p className="login-intro">Use your administrator credentials to continue.</p>
         <LoginForm nextPath={nextPath} />

@@ -1,5 +1,7 @@
 "use client";
 
+import { UiIcon } from "@/components/atoms/icons/ui-icon";
+import { IconButton } from "@/components/atoms/icon-button";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
@@ -112,15 +114,18 @@ export function DoctorsTable() {
     <section className="page-content" aria-labelledby="page-title">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Directory</p>
           <h1 id="page-title">Doctors</h1>
           <p className="page-description">Search your directory and keep patient care organized.</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>Add doctor</Button>
+        <Button onClick={() => setDialogOpen(true)}>
+          <UiIcon name="plus" />
+          Add doctor
+        </Button>
       </div>
       <div className="filter-toolbar">
         <label className="search-control">
           <span className="sr-only">Search doctors</span>
+          <UiIcon name="search" />
           <TextInput
             value={params.q ?? ""}
             placeholder="Search name, email, hospital or phone"
@@ -195,6 +200,7 @@ export function DoctorsTable() {
         <div className="setup-card" role="alert">
           <p>Couldn’t load doctors. Check your connection and try again.</p>
           <Button variant="outline" onClick={() => void doctors.refetch()}>
+            <UiIcon name="retry" />
             Retry
           </Button>
         </div>
@@ -235,23 +241,23 @@ export function DoctorsTable() {
                 <option>50</option>
               </select>
             </label>
-            <Button
+            <IconButton
               variant="outline"
+              icon="previous"
+              label="Previous page"
               disabled={(params.page ?? 1) <= 1}
               onClick={() => updateParam("page", String((params.page ?? 1) - 1))}
-            >
-              Previous
-            </Button>
+            />
             <span>
               Page {params.page ?? 1} of {Math.max(1, doctors.data?.meta.pageCount ?? 1)}
             </span>
-            <Button
+            <IconButton
               variant="outline"
+              icon="next"
+              label="Next page"
               disabled={(params.page ?? 1) >= (doctors.data?.meta.pageCount ?? 1)}
               onClick={() => updateParam("page", String((params.page ?? 1) + 1))}
-            >
-              Next
-            </Button>
+            />
           </div>
         </div>
       </div>
@@ -311,12 +317,9 @@ function DoctorDialog({ onClose }: { onClose: () => void }) {
       >
         <div className="dialog-heading">
           <div>
-            <p className="eyebrow">Doctor profile</p>
             <h2 id="doctor-dialog-title">Add doctor</h2>
           </div>
-          <Button variant="ghost" onClick={onClose} aria-label="Close dialog">
-            ×
-          </Button>
+          <IconButton icon="close" label="Close dialog" onClick={onClose} />
         </div>
         <form className="record-form" onSubmit={submit} noValidate>
           {fields.map(([name, label, placeholder]) => (

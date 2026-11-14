@@ -13,7 +13,7 @@
 4. **Every async surface has 4 states:** loading (skeleton), empty, error (with retry), success. No blank screens, no spinners-only.
 5. **Every interactive element:** visible focus ring, ≥ 40×40 px hit area (WCAG 2.2 AA minimum is 24×24), keyboard reachable, accessible name.
 6. **Implement in this order:** tokens → app shell → auth → Doctors (list/create/detail) → Patients → Dashboard → polish → README screenshots. Check off §16 as you go.
-7. **Stack decision:** Next.js App Router frontend and standalone Express 5 TypeScript backend. The browser uses `/api/*` through a same-origin rewrite to Express `/api/v1/*`. Express owns MongoDB access, validation, authorization, and business rules. See the [backend architecture](../../backend/docs/ARCHITECTURE.md) and [REST contract](../../backend/docs/API_CONTRACT.md) for the authoritative service boundary and endpoint contract.
+7. **Stack decision:** Next.js App Router frontend and standalone Express 5 TypeScript backend. The browser uses `/api/*` through a same-origin rewrite to Express `/api/v1/*`. Express owns MongoDB access, validation, authorization, and business rules. See the [backend architecture](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/ARCHITECTURE.md) and [REST contract](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/API_CONTRACT.md) for the authoritative service boundary and endpoint contract.
 8. **Don't invent new patterns.** If something is missing here, extend §6 first, then build.
 9. **Data & state ownership (§11):** server data → TanStack Query; shareable table/filter state → the URL (`nuqs`); small cross-component UI state → Zustand; everything else stays local. Never copy server data into Zustand or `useState`.
 10. **Data hooks, Zustand stores and URL state are used only in organisms** (and in pages for optional prefetch). Atoms, molecules and templates stay presentational.
@@ -549,7 +549,7 @@ Layout (desktop 12-col grid, gap-6):
 
 ### 10.1 Auth
 - Email + password → Argon2id verification → opaque MongoDB session in an **`httpOnly`, `Secure`, `SameSite=Lax` cookie** with a fixed 12-hour expiry. `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`.
-- Express authorizes every protected request. Login is Admin-only with no public signup. Rate-limit login, store only a digest of the session token, check expiry on every request, and revoke the session on logout. Apply the configured public-origin check to browser mutations. See the [backend session and request rules](../../backend/docs/ARCHITECTURE.md#authentication-and-request-handling).
+- Express authorizes every protected request. Login is Admin-only with no public signup. Rate-limit login, store only a digest of the session token, check expiry on every request, and revoke the session on logout. Apply the configured public-origin check to browser mutations. See the [backend session and request rules](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/ARCHITECTURE.md#authentication-and-request-handling).
 
 ### 10.2 Endpoints (REST, JSON, `/api/v1`-style naming)
 | Method & path | Purpose | Notes |
@@ -568,7 +568,7 @@ Layout (desktop 12-col grid, gap-6):
 | `GET /api/meta/filters` | Distinct specializations, hospitals | cached 5 min |
 | `GET /api/dashboard/summary?range=30d` | Everything the dashboard needs | one round trip |
 
-**List query params** are defined in the [REST contract](../../backend/docs/API_CONTRACT.md#input-and-list-behavior). Repeated keys represent multi-value free-text facets so values containing commas remain intact.
+**List query params** are defined in the [REST contract](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/API_CONTRACT.md#input-and-list-behavior). Repeated keys represent multi-value free-text facets so values containing commas remain intact.
 
 **List response:**
 ```json
@@ -618,7 +618,7 @@ Store `*Lower` normalized fields for fast, index-friendly search.
 ```
 - **Search:** anchored prefix match on normalized fields (`{ nameLower: { $regex: '^' + escape(q) } }`) so the index is used; escape user input to avoid regex injection. (If substring/typo-tolerant search is later required: MongoDB Atlas Search.)
 - **Pagination:** `skip/limit` + `countDocuments` run in parallel (`Promise.all`) with `.lean()` and field projection (list views never need `notes`). Cap `pageSize`; for deep pages consider keyset (`_id`/`createdAt` cursor) — document as future work.
-- **Dashboard:** one summary HTTP response combines all-time summary data with the date-window trend and new-patient KPI. Keep all-time totals independent from the selected date window. Use a `$facet` for compatible all-time patient summaries and a separate indexed date-window aggregation. Zero-fill date buckets in code. Verify query plans and latency with `.explain('executionStats')` on representative data. See the [backend dashboard plan](../../backend/docs/ARCHITECTURE.md#dashboard-reads).
+- **Dashboard:** one summary HTTP response combines all-time summary data with the date-window trend and new-patient KPI. Keep all-time totals independent from the selected date window. Use a `$facet` for compatible all-time patient summaries and a separate indexed date-window aggregation. Zero-fill date buckets in code. Verify query plans and latency with `.explain('executionStats')` on representative data. See the [backend dashboard plan](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/ARCHITECTURE.md#dashboard-reads).
 - Validate with Zod at the route boundary; never trust client `sort` field — allow-list it.
 
 ---

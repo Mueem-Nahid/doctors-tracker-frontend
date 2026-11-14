@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run contracts:build && next dev",
     "build": "npm run contracts:build && next build --webpack",
     "contracts:build": "tsc -p packages/contracts/tsconfig.json",
     "start": "next start",

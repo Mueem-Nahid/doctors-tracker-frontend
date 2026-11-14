@@ -1,6 +1,6 @@
 # Doctor Tracker frontend implementation plan
 
-[Design](DESIGN.md) · [Delivery phases](../../docs/IMPLEMENTATION_PLAN.md#phases) · [REST contract](../../backend/docs/API_CONTRACT.md)
+[Design](DESIGN.md) · [REST contract](https://github.com/Mueem-Nahid/doctors-tracker-backend/blob/main/docs/API_CONTRACT.md)
 
 Build on the existing Next.js App Router project. Use the design's tokens, page layouts, and Atomic Design hierarchy. Use TanStack Query v5 for server data, `nuqs` for table and dashboard parameters, Zustand for shared UI preferences, `next-themes` for theme, and React Hook Form with shared Zod schemas for forms. Reuse the generic table across doctor, patient, doctor-patient, and recent-patient views. [TanStack Query pagination](https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries)
 

@@ -23,10 +23,11 @@ export function useDoctorsQuery(params: Partial<DoctorListQuery>) {
   });
 }
 
-export function useDoctorQuery(id: string) {
+export function useDoctorQuery(id: string, enabled = true) {
   return useQuery({
     queryKey: qk.doctors.detail(id),
     queryFn: ({ signal }) => apiFetch<Doctor>(`/doctors/${id}`, { signal }),
+    enabled,
   });
 }
 

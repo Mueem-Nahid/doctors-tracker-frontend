@@ -41,6 +41,13 @@ const glyphs = {
     <path d="m4 4 16 16M10 6.2c.6-.1 1.3-.2 2-.2 6 0 9 6 9 6a13 13 0 0 1-2.2 2.7M6 7.8a14 14 0 0 0-3 4.2s3 6 9 6c1.3 0 2.5-.3 3.5-.7" />
   ),
   retry: <path d="M20 11a8 8 0 1 0-2 6m2-12v6h-6" />,
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v4m0 4h.01" />
+    </>
+  ),
+  records: <path d="M3 7h7l2 2h9v10H3zM3 7V5h7l2 2h7v2" />,
 } satisfies Record<string, ReactNode>;
 
 export function UiIcon({ name }: { name: keyof typeof glyphs }) {

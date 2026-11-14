@@ -1,3 +1,4 @@
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
 import { Suspense, type ReactNode } from "react";
 import { AppShellTemplate } from "@/components/templates/app-shell-template";
 import { requireAdmin } from "@/lib/server/auth";
@@ -6,13 +7,7 @@ export const instant = false;
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense
-      fallback={
-        <div className="route-loading" role="status">
-          Loading your workspace…
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingPlaceholder label="Loading your workspace" variant="standalone" />}>
       <AuthenticatedWorkspace>{children}</AuthenticatedWorkspace>
     </Suspense>
   );

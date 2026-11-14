@@ -1,3 +1,4 @@
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
 import { Suspense } from "react";
 import { DoctorDetail } from "@/components/organisms/doctors/doctor-detail";
 
@@ -5,9 +6,9 @@ export default function DoctorPage({ params }: { params: Promise<{ id: string }>
   return (
     <Suspense
       fallback={
-        <section className="page-content route-loading" role="status">
-          Loading doctor…
-        </section>
+        <div className="page-content">
+          <LoadingPlaceholder label="Loading doctor profile" variant="profile" />
+        </div>
       }
     >
       <DoctorPageContent params={params} />

@@ -1,3 +1,4 @@
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/server/auth";
@@ -24,13 +25,7 @@ function getInternalReturnPath(value: string | string[] | undefined): string {
 
 export default function LoginPage({ searchParams }: LoginPageProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="route-loading" role="status">
-          Loading sign in…
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingPlaceholder label="Loading sign in" variant="standalone" />}>
       <LoginPageContent searchParams={searchParams} />
     </Suspense>
   );

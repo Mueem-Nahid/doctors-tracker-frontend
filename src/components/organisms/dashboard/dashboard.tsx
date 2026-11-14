@@ -13,7 +13,8 @@ import {
 } from "@doctor-tracker/contracts";
 import { StethoscopeIcon } from "@/components/atoms/icons/stethoscope-icon";
 import { UsersIcon } from "@/components/atoms/icons/users-icon";
-import { Button } from "@/components/atoms/button";
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
+import { RetryButton, StatusPanel } from "@/components/molecules/status-panel";
 import { useDashboardSummary } from "@/lib/queries/dashboard";
 
 const ranges: Array<{ value: ReportingRange; label: string }> = [
@@ -25,45 +26,33 @@ const ranges: Array<{ value: ReportingRange; label: string }> = [
 const numberFormat = new Intl.NumberFormat();
 const TrendGraph = dynamic(() => import("./dashboard-charts").then((module) => module.TrendGraph), {
   ssr: false,
-  loading: () => (
-    <div className="chart-loading" role="status">
-      Loading chart…
-    </div>
-  ),
+  loading: ChartSkeleton,
 });
 const ConditionDonut = dynamic(
   () => import("./dashboard-charts").then((module) => module.ConditionDonut),
   {
     ssr: false,
-    loading: () => (
-      <div className="chart-loading" role="status">
-        Loading chart…
-      </div>
-    ),
+    loading: ChartSkeleton,
   },
 );
 const DoctorLoadChart = dynamic(
   () => import("./dashboard-charts").then((module) => module.DoctorLoadChart),
   {
     ssr: false,
-    loading: () => (
-      <div className="chart-loading" role="status">
-        Loading chart…
-      </div>
-    ),
+    loading: ChartSkeleton,
   },
 );
 const SpecializationChart = dynamic(
   () => import("./dashboard-charts").then((module) => module.SpecializationChart),
   {
     ssr: false,
-    loading: () => (
-      <div className="chart-loading" role="status">
-        Loading chart…
-      </div>
-    ),
+    loading: ChartSkeleton,
   },
 );
+
+function ChartSkeleton() {
+  return <LoadingPlaceholder label="Loading chart" variant="chart" />;
+}
 
 export function Dashboard() {
   const router = useRouter(),
@@ -106,18 +95,15 @@ export function Dashboard() {
         </label>
       </div>
       {summary.isError ? (
-        <div className="setup-card" role="alert">
-          <div>
-            <h2>Couldn’t load dashboard data</h2>
-            <p>Check your connection and retry.</p>
-          </div>
-          <Button variant="outline" onClick={() => void summary.refetch()}>
-            <UiIcon name="retry" />
-            Retry
-          </Button>
-        </div>
-      ) : null}
-      {summary.isPending ? (
+        <StatusPanel
+          tone="error"
+          title="Couldn’t load dashboard data"
+          description="Try again to refresh the dashboard."
+          actions={
+            <RetryButton onRetry={() => void summary.refetch()} pending={summary.isFetching} />
+          }
+        />
+      ) : summary.isPending ? (
         <DashboardSkeleton />
       ) : data ? (
         <>
@@ -270,7 +256,7 @@ function TrendCard({
       {points.length ? (
         <TrendGraph points={points} range={range} />
       ) : (
-        <EmptyChart>No patients in this period</EmptyChart>
+        <StatusPanel heading="h3" title="No patients in this period" />
       )}
     </ChartCard>
   );
@@ -315,7 +301,7 @@ function ConditionCard({ data }: { data: DashboardSummary }) {
       {rows.length ? (
         <ConditionDonut rows={rows} total={data.kpis.totalPatients} />
       ) : (
-        <EmptyChart>No patient records yet</EmptyChart>
+        <StatusPanel heading="h3" title="No patient records yet" />
       )}
     </ChartCard>
   );
@@ -353,7 +339,7 @@ function DoctorLoadCard({ data }: { data: DashboardSummary }) {
       {doctors.length ? (
         <DoctorLoadChart rows={doctors} />
       ) : (
-        <EmptyChart>No assigned patients yet</EmptyChart>
+        <StatusPanel heading="h3" title="No assigned patients yet" />
       )}
     </ChartCard>
   );
@@ -389,7 +375,7 @@ function SpecializationCard({ data }: { data: DashboardSummary }) {
       {rows.length ? (
         <SpecializationChart rows={rows} />
       ) : (
-        <EmptyChart>No doctors in the directory</EmptyChart>
+        <StatusPanel heading="h3" title="No doctors in the directory" />
       )}
     </ChartCard>
   );
@@ -456,16 +442,13 @@ function RecentPatients({ rows }: { rows: DashboardSummary["recentPatients"] }) 
         </div>
       ) : (
         <div className="data-card">
-          <EmptyChart>No patients have been added yet</EmptyChart>
+          <StatusPanel heading="h3" title="No patients have been added yet" />
         </div>
       )}
     </section>
   );
 }
 
-function EmptyChart({ children }: { children: ReactNode }) {
-  return <div className="chart-empty">{children}</div>;
-}
 function formatBucket(date: string, range: ReportingRange) {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -475,24 +458,29 @@ function formatBucket(date: string, range: ReportingRange) {
 }
 function DashboardSkeleton() {
   return (
-    <>
-      <div className="kpi-grid">
-        {[0, 1, 2, 3].map((item) => (
-          <div className="kpi-card skeleton-kpi" key={item}>
-            <span className="skeleton skeleton-heading" />
-            <span className="skeleton skeleton-value" />
-            <span className="skeleton skeleton-caption" />
-          </div>
-        ))}
+    <div>
+      <span className="sr-only" role="status">
+        Loading dashboard data
+      </span>
+      <div aria-hidden="true">
+        <div className="kpi-grid">
+          {[0, 1, 2, 3].map((item) => (
+            <div className="kpi-card skeleton-kpi" key={item}>
+              <span className="skeleton skeleton-heading" />
+              <span className="skeleton skeleton-value" />
+              <span className="skeleton skeleton-caption" />
+            </div>
+          ))}
+        </div>
+        <div className="dashboard-chart-grid">
+          {[0, 1, 2, 3].map((item) => (
+            <div className="chart-card skeleton-chart" key={item}>
+              <span className="skeleton skeleton-heading" />
+              <span className="skeleton skeleton-panel" />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="dashboard-chart-grid">
-        {[0, 1, 2, 3].map((item) => (
-          <div className="chart-card skeleton-chart" key={item}>
-            <span className="skeleton skeleton-heading" />
-            <span className="skeleton skeleton-panel" />
-          </div>
-        ))}
-      </div>
-    </>
+    </div>
   );
 }

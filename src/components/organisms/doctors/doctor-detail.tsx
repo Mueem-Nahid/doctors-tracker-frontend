@@ -2,24 +2,43 @@
 
 import { UiIcon } from "@/components/atoms/icons/ui-icon";
 import Link from "next/link";
+import { objectIdSchema } from "@doctor-tracker/contracts";
+import { ApiError } from "@/lib/api";
 import { useDoctorQuery } from "@/lib/queries/doctors";
 import { DoctorPatientsPanel } from "@/components/organisms/doctors/doctor-patients-panel";
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
+import { RetryButton, StatusPanel } from "@/components/molecules/status-panel";
 
 export function DoctorDetail({ doctorId }: { doctorId: string }) {
-  const doctor = useDoctorQuery(doctorId);
-  if (doctor.isPending)
+  const validId = objectIdSchema.safeParse(doctorId).success;
+  const doctor = useDoctorQuery(doctorId, validId);
+  const missing = !validId || (doctor.error instanceof ApiError && doctor.error.status === 404);
+  if (!doctor.data)
     return (
-      <section className="page-content" role="status">
-        Loading doctor…
-      </section>
-    );
-  if (doctor.isError || !doctor.data)
-    return (
-      <section className="page-content" role="alert">
+      <section className="page-content">
         <Link className="back-link" href="/doctors">
           <UiIcon name="back" /> Back to doctors
         </Link>
-        <p>Couldn’t load this doctor. Check your connection and try again.</p>
+        {missing ? (
+          <StatusPanel
+            heading="h1"
+            tone="missing"
+            title="Doctor not found"
+            description="This link may be outdated. Return to the doctors directory to find the record."
+          />
+        ) : doctor.isPending ? (
+          <LoadingPlaceholder label="Loading doctor profile" variant="profile" />
+        ) : (
+          <StatusPanel
+            heading="h1"
+            tone="error"
+            title="Couldn’t load the doctor profile"
+            description="Try again to reload this doctor’s details."
+            actions={
+              <RetryButton onRetry={() => void doctor.refetch()} pending={doctor.isFetching} />
+            }
+          />
+        )}
       </section>
     );
   const item = doctor.data;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/atoms/button";
+import { RetryButton, StatusPanel } from "@/components/molecules/status-panel";
 
 export default function ErrorPage({
   reset,
@@ -9,13 +9,14 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <main className="error-page" role="alert">
-      <p className="eyebrow">Something went wrong</p>
-      <h1>We couldn’t load this page.</h1>
-      <p>Check your connection and try again.</p>
-      <Button onClick={reset} type="button">
-        Try again
-      </Button>
+    <main className="error-page">
+      <StatusPanel
+        heading="h1"
+        tone="error"
+        title="Couldn’t load this page"
+        description="Try again to reload the page."
+        actions={<RetryButton onRetry={reset} />}
+      />
     </main>
   );
 }

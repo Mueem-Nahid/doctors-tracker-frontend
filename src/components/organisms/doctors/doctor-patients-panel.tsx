@@ -1,5 +1,8 @@
 "use client";
 
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
+import { RetryButton, StatusPanel } from "@/components/molecules/status-panel";
+
 import { UiIcon } from "@/components/atoms/icons/ui-icon";
 import { IconButton } from "@/components/atoms/icon-button";
 import { useMemo, useState, type FormEvent } from "react";
@@ -59,7 +62,9 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
     [searchParams],
   );
   const result = useDoctorPatientsQuery(doctorId, params);
+  const hasFilters = Boolean(params.q || params.condition?.length || params.status?.length);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const remove = useDeletePatientMutation(doctorId);
   const columns = [
     {
@@ -132,11 +137,12 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
         `Delete ${name}? This permanently removes the patient record and can’t be undone.`,
       )
     ) {
-      await remove
-        .mutateAsync(id)
-        .catch((error: unknown) =>
-          window.alert(error instanceof Error ? error.message : "Couldn’t delete the patient."),
-        );
+      setDeleteError("");
+      try {
+        await remove.mutateAsync(id);
+      } catch (error) {
+        setDeleteError(error instanceof Error ? error.message : "Try deleting the patient again.");
+      }
     }
   }
   return (
@@ -185,19 +191,28 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
           </select>
         </label>
       </div>
+      {deleteError ? (
+        <div className="status-inline-error" role="alert">
+          <UiIcon name="alert" />
+          <p>
+            <strong>Couldn’t delete the patient.</strong> {deleteError}
+          </p>
+          <IconButton icon="close" label="Dismiss error" onClick={() => setDeleteError("")} />
+        </div>
+      ) : null}
       <div className="data-card">
         {result.isError ? (
-          <div className="table-message" role="alert">
-            Couldn’t load patients.{" "}
-            <Button variant="outline" onClick={() => void result.refetch()}>
-              <UiIcon name="retry" />
-              Retry
-            </Button>
-          </div>
+          <StatusPanel
+            heading="h3"
+            tone="error"
+            title="Couldn’t load patients"
+            description="Try again to reload the list."
+            actions={
+              <RetryButton onRetry={() => void result.refetch()} pending={result.isFetching} />
+            }
+          />
         ) : result.isPending ? (
-          <p className="table-message" role="status">
-            Loading patients…
-          </p>
+          <LoadingPlaceholder label="Loading patients" variant="table" />
         ) : result.data?.data.length ? (
           <DataTable
             columns={columns}
@@ -206,37 +221,40 @@ export function DoctorPatientsPanel({ doctorId }: { doctorId: string }) {
             label="Patients assigned to this doctor"
           />
         ) : (
-          <div className="table-message">
-            <strong>
-              {params.q || params.condition?.length || params.status?.length
-                ? "No patients match these filters."
-                : "No patients added yet."}
-            </strong>
-            <p>Add a patient to this doctor’s panel.</p>
-          </div>
+          <StatusPanel
+            heading="h3"
+            title={hasFilters ? "No patients match these filters" : "No patients assigned yet"}
+            description={
+              hasFilters
+                ? "Try adjusting the search or filters."
+                : "Add a patient to this doctor’s panel."
+            }
+          />
         )}
-        <div className="table-footer">
-          <span>{result.data?.meta.total ?? 0} patients</span>
-          <div>
-            <IconButton
-              variant="outline"
-              icon="previous"
-              label="Previous page"
-              disabled={(params.page ?? 1) <= 1}
-              onClick={() => update("patientPage", String((params.page ?? 1) - 1))}
-            />
-            <span>
-              Page {params.page ?? 1} of {Math.max(1, result.data?.meta.pageCount ?? 1)}
-            </span>
-            <IconButton
-              variant="outline"
-              icon="next"
-              label="Next page"
-              disabled={(params.page ?? 1) >= (result.data?.meta.pageCount ?? 1)}
-              onClick={() => update("patientPage", String((params.page ?? 1) + 1))}
-            />
+        {result.data && !result.isError ? (
+          <div className="table-footer">
+            <span>{result.data?.meta.total ?? 0} patients</span>
+            <div>
+              <IconButton
+                variant="outline"
+                icon="previous"
+                label="Previous page"
+                disabled={(params.page ?? 1) <= 1}
+                onClick={() => update("patientPage", String((params.page ?? 1) - 1))}
+              />
+              <span>
+                Page {params.page ?? 1} of {Math.max(1, result.data?.meta.pageCount ?? 1)}
+              </span>
+              <IconButton
+                variant="outline"
+                icon="next"
+                label="Next page"
+                disabled={(params.page ?? 1) >= (result.data?.meta.pageCount ?? 1)}
+                onClick={() => update("patientPage", String((params.page ?? 1) + 1))}
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
       {dialogOpen ? (
         <PatientDialog doctorId={doctorId} onClose={() => setDialogOpen(false)} />

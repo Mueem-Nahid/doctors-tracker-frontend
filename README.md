@@ -71,9 +71,19 @@ The four charts use Recharts for responsive axes, tooltips, and area, pie, and b
 
 The production frontend build was captured in Edge using synthetic API responses.
 
+### Dashboard
+
 ![Dashboard on desktop](docs/screenshots/dashboard-desktop.png)
 
 <img src="docs/screenshots/dashboard-mobile.png" width="390" alt="Dashboard on mobile">
+
+### Doctor profile states
+
+![Doctor profile loading on desktop in dark mode](docs/screenshots/doctor-loading-desktop.png)
+
+![Doctor not found on desktop in dark mode](docs/screenshots/doctor-not-found-desktop.png)
+
+<img src="docs/screenshots/doctor-not-found-mobile.png" width="390" alt="Doctor not found on mobile in dark mode">
 
 ## Deployment and submission
 

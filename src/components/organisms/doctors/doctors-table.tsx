@@ -1,5 +1,8 @@
 "use client";
 
+import { LoadingPlaceholder } from "@/components/molecules/loading-placeholder";
+import { RetryButton, StatusPanel } from "@/components/molecules/status-panel";
+
 import { UiIcon } from "@/components/atoms/icons/ui-icon";
 import { IconButton } from "@/components/atoms/icon-button";
 import Link from "next/link";
@@ -54,6 +57,13 @@ export function DoctorsTable() {
   );
   const doctors = useDoctorsQuery(params);
   const filters = useDoctorFiltersQuery();
+  const hasFilters = Boolean(
+    params.q ||
+    params.specialization?.length ||
+    params.hospital?.length ||
+    params.from ||
+    params.to,
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const columns = [
     {
@@ -196,20 +206,18 @@ export function DoctorsTable() {
           </select>
         </label>
       </div>
-      {doctors.isError ? (
-        <div className="setup-card" role="alert">
-          <p>Couldn’t load doctors. Check your connection and try again.</p>
-          <Button variant="outline" onClick={() => void doctors.refetch()}>
-            <UiIcon name="retry" />
-            Retry
-          </Button>
-        </div>
-      ) : null}
       <div className="data-card">
-        {doctors.isPending ? (
-          <p className="table-message" role="status">
-            Loading doctors…
-          </p>
+        {doctors.isError ? (
+          <StatusPanel
+            tone="error"
+            title="Couldn’t load doctors"
+            description="Try again to reload the list."
+            actions={
+              <RetryButton onRetry={() => void doctors.refetch()} pending={doctors.isFetching} />
+            }
+          />
+        ) : doctors.isPending ? (
+          <LoadingPlaceholder label="Loading doctors" variant="table" />
         ) : doctors.data?.data.length ? (
           <DataTable
             columns={columns}
@@ -218,48 +226,60 @@ export function DoctorsTable() {
             label="Doctors"
           />
         ) : (
-          <div className="table-message">
-            <strong>
-              {params.q || params.specialization?.length || params.hospital?.length
-                ? "No doctors match your filters."
-                : "No doctors yet."}
-            </strong>
-            <p>Add your first doctor to start tracking patients.</p>
-          </div>
+          <StatusPanel
+            title={hasFilters ? "No doctors match these filters" : "No doctors yet"}
+            description={
+              hasFilters
+                ? "Try adjusting your search or clearing your filters."
+                : "Add your first doctor to start tracking patients."
+            }
+            actions={
+              hasFilters ? (
+                <Button
+                  variant="outline"
+                  onClick={() => router.replace(pathname, { scroll: false })}
+                >
+                  Clear filters
+                </Button>
+              ) : undefined
+            }
+          />
         )}
-        <div className="table-footer">
-          <span>{doctors.data?.meta.total ?? 0} doctors</span>
-          <div>
-            <label>
-              Rows{" "}
-              <select
-                value={params.pageSize ?? 10}
-                onChange={(event) => updateParam("pageSize", event.target.value)}
-              >
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-              </select>
-            </label>
-            <IconButton
-              variant="outline"
-              icon="previous"
-              label="Previous page"
-              disabled={(params.page ?? 1) <= 1}
-              onClick={() => updateParam("page", String((params.page ?? 1) - 1))}
-            />
-            <span>
-              Page {params.page ?? 1} of {Math.max(1, doctors.data?.meta.pageCount ?? 1)}
-            </span>
-            <IconButton
-              variant="outline"
-              icon="next"
-              label="Next page"
-              disabled={(params.page ?? 1) >= (doctors.data?.meta.pageCount ?? 1)}
-              onClick={() => updateParam("page", String((params.page ?? 1) + 1))}
-            />
+        {doctors.data && !doctors.isError ? (
+          <div className="table-footer">
+            <span>{doctors.data?.meta.total ?? 0} doctors</span>
+            <div>
+              <label>
+                Rows{" "}
+                <select
+                  value={params.pageSize ?? 10}
+                  onChange={(event) => updateParam("pageSize", event.target.value)}
+                >
+                  <option>10</option>
+                  <option>20</option>
+                  <option>50</option>
+                </select>
+              </label>
+              <IconButton
+                variant="outline"
+                icon="previous"
+                label="Previous page"
+                disabled={(params.page ?? 1) <= 1}
+                onClick={() => updateParam("page", String((params.page ?? 1) - 1))}
+              />
+              <span>
+                Page {params.page ?? 1} of {Math.max(1, doctors.data?.meta.pageCount ?? 1)}
+              </span>
+              <IconButton
+                variant="outline"
+                icon="next"
+                label="Next page"
+                disabled={(params.page ?? 1) >= (doctors.data?.meta.pageCount ?? 1)}
+                onClick={() => updateParam("page", String((params.page ?? 1) + 1))}
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
       {dialogOpen ? <DoctorDialog onClose={() => setDialogOpen(false)} /> : null}
     </section>
